@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3-Month Transformation Tracker</title>
+<style>
+* { box-sizing: border-box; }
+body { font-family: system-ui, -apple-system, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; line-height: 1.5; }
+h1 { margin-bottom: 5px; }
+h3 { margin-top: 25px; margin-bottom: 15px; }
+.subtitle { color: #666; margin-top: 0; }
+.nav { margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap; }
+.nav button { padding: 10px 20px; cursor: pointer; border: 1px solid #333; background: #fff; font-size: 14px; }
+.nav button.active { background: #333; color: #fff; }
+.section { padding: 15px; border: 1px solid #ddd; border-radius: 5px; margin-bottom: 20px; }
+label { display: block; margin-bottom: 5px; font-weight: bold; }
+select { padding: 10px; width: 100%; margin-bottom: 15px; font-size: 14px; }
+.week-buttons { display: flex; gap: 10px; }
+.week-buttons button { padding: 10px 20px; border: 1px solid #333; background: #fff; cursor: pointer; font-size: 16px; }
+.week-buttons button.active { background: #333; color: #fff; }
+.day-buttons { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+.day-buttons button { padding: 12px 16px; border: 1px solid #ccc; background: #fff; cursor: pointer; font-size: 13px; }
+.day-buttons button.active { background: #333; color: #fff; }
+.day-buttons button:disabled { background: #f5f5f5; color: #999; cursor: not-allowed; }
+table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+th { text-align: left; padding: 12px 10px; border-bottom: 2px solid #333; font-size: 14px; }
+td { padding: 12px 10px; border-bottom: 1px solid #eee; vertical-align: top; }
+tr.completed { background: #e8f5e9; }
+input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; }
+input[type="number"], input[type="text"], input[type="date"] { padding: 8px; font-size: 14px; border: 1px solid #ccc; border-radius: 3px; }
+.exercise-note { color: #e65100; font-size: 12px; display: block; margin-top: 4px; }
+.form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+.form-grid label { font-weight: normal; font-size: 12px; margin-bottom: 3px; }
+.form-grid input { width: 100%; }
+.btn { padding: 10px 20px; cursor: pointer; margin-top: 10px; font-size: 14px; }
+.header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.empty-message { color: #666; font-style: italic; }
+ul { line-height: 2.2; }
+.progression-table td { padding: 10px; border-bottom: 1px solid #eee; }
+.progression-table td:first-child { font-weight: bold; width: 100px; }
+.nutrition-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 15px; }
+.nutrition-card { padding: 15px; background: #f9f9f9; border-radius: 5px; text-align: center; }
+.nutrition-card .value { font-size: 28px; font-weight: bold; color: #333; }
+.nutrition-card .label { font-size: 12px; color: #666; }
+@media (max-width: 600px) {
+  .form-grid { grid-template-columns: repeat(2, 1fr); }
+  .nutrition-grid { grid-template-columns: 1fr; }
+  table { font-size: 13px; }
+  td, th { padding: 8px 6px; }
+  .day-buttons button { padding: 10px 12px; font-size: 12px; }
+}
+</style>
+</head>
+<body>
+
+<h1>3-Month Transformation Tracker</h1>
+<p class="subtitle" id="currentGoal">Build consistency, master form, establish baseline strength</p>
+
+<div class="nav">
+  <button class="active" id="navWorkout" onclick="switchView('workout')">Workouts</button>
+  <button id="navProgress" onclick="switchView('progress')">Progress</button>
+  <button id="navGoals" onclick="switchView('goals')">Goals</button>
+</div>
+
+<div class="section">
+  <label>Training Phase:</label>
+  <select id="monthSelector" onchange="changeMonth()">
+    <option value="month1">Month 1: Foundation Phase (Weeks 1-4)</option>
+    <option value="month2">Month 2: Growth Phase (Weeks 5-8)</option>
+    <option value="month3">Month 3: Intensity Phase (Weeks 9-12)</option>
+  </select>
+  <label>Current Week:</label>
+  <div class="week-buttons" id="weekButtons"></div>
+</div>
+
+<!-- WORKOUT VIEW -->
+<div id="workoutView">
+  <h3>Select Training Day:</h3>
+  <div class="day-buttons" id="dayButtons"></div>
+  <div id="exerciseTableContainer"></div>
+</div>
+
+<!-- PROGRESS VIEW -->
+<div id="progressView" style="display: none;">
+  <h3>Nutrition Targets</h3>
+  <div class="section">
+    <div class="nutrition-grid" id="nutritionGrid"></div>
+    <p id="nutritionNote" style="color: #666; font-style: italic;"></p>
+  </div>
+  
+  <div class="header-row">
+    <h3 style="margin: 0;">Body Measurements</h3>
+    <button class="btn" onclick="toggleMeasurementForm()">+ Add Measurement</button>
+  </div>
+  
+  <div class="section" id="measurementForm" style="display: none;">
+    <div class="form-grid">
+      <div>
+        <label>Date</label>
+        <input type="date" id="inputDate">
+      </div>
+      <div>
+        <label>Weight (lbs)</label>
+        <input type="number" id="inputWeight" placeholder="e.g. 165">
+      </div>
+      <div>
+        <label>Waist (inches)</label>
+        <input type="number" step="0.1" id="inputWaist" placeholder="at belly button">
+      </div>
+      <div>
+        <label>Chest (inches)</label>
+        <input type="number" step="0.1" id="inputChest" placeholder="across nipples">
+      </div>
+      <div>
+        <label>Shoulders (inches)</label>
+        <input type="number" step="0.1" id="inputShoulders" placeholder="widest point">
+      </div>
+      <div>
+        <label>Arms (inches)</label>
+        <input type="number" step="0.1" id="inputArms" placeholder="flexed, at peak">
+      </div>
+      <div>
+        <label>Thighs (inches)</label>
+        <input type="number" step="0.1" id="inputThighs" placeholder="mid-thigh">
+      </div>
+    </div>
+    <button class="btn" onclick="saveMeasurement()">Save Measurement</button>
+  </div>
+  
+  <div id="measurementTableContainer"></div>
+</div>
+
+<!-- GOALS VIEW -->
+<div id="goalsView" style="display: none;">
+  <h3 id="goalsTitle">Month 1 Goals</h3>
+  <ul id="goalsList"></ul>
+  
+  <h3>Progressive Overload Summary</h3>
+  <table class="progression-table">
+    <tbody>
+      <tr>
+        <td>Month 1</td>
+        <td>3 sets per exercise, moderate weight, focus on learning proper form. Total volume: ~90 sets per week.</td>
+      </tr>
+      <tr>
+        <td>Month 2</td>
+        <td>4 sets per exercise, increased weight, full range of motion on Ab Carver. Total volume: ~100 sets per week.</td>
+      </tr>
+      <tr>
+        <td>Month 3</td>
+        <td>4-5 sets per exercise, heavier weight, lower rep ranges on compounds. Total volume: ~110 sets per week.</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <h3>Week 13: Deload Week</h3>
+  <p>After completing Month 3, take a deload week to prevent burnout and injury:</p>
+  <ul>
+    <li>Perform the same exercises as Month 3</li>
+    <li>Use only 50% of your normal working weight</li>
+    <li>Do 2 sets instead of 3-4 sets per exercise</li>
+    <li>Focus entirely on form and recovery</li>
+    <li>Then reassess and plan your next 3 months!</li>
+  </ul>
+  
+  <h3>Weekly Tracking Checklist</h3>
+  <ul>
+    <li>Monday morning weigh-in (after bathroom, before eating)</li>
+    <li>Waist measurement at belly button level</li>
+    <li>Log all workouts with weights used</li>
+  </ul>
+  
+  <h3>Monthly Tracking Checklist</h3>
+  <ul>
+    <li>Progress photos (front, side, back - same lighting and location)</li>
+    <li>Full body measurements (chest, shoulders, arms, waist, thighs)</li>
+    <li>Review and adjust calories if needed</li>
+  </ul>
+</div>
+
+<script>
+// COMPLETE WORKOUT DATA - NOT TRIMMED
+var WORKOUT_DATA = {
+  month1: {
+    name: "Month 1: Foundation Phase",
+    goal: "Build consistency, master form, establish baseline strength",
+    weeks: "1-4",
+    nutrition: {
+      calories: 2400,
+      protein: 165,
+      note: "Assessment phase - weigh in every Monday morning"
+    },
+    workouts: {
+      day1: {
+        name: "Upper Body A (Push Focus)",
+        exercises: [
+          { name: "Chest Press Machine", sets: 3, reps: "10-12", note: "" },
+          { name: "Incline Dumbbell Press", sets: 3, reps: "10-12", note: "" },
+          { name: "Shoulder Press Machine", sets: 3, reps: "10-12", note: "" },
+          { name: "Dumbbell Lateral Raises", sets: 3, reps: "12-15", note: "" },
+          { name: "Seated Cable Row", sets: 3, reps: "10-12", note: "" },
+          { name: "Cable Flyes", sets: 3, reps: "12-15", note: "" },
+          { name: "Cable Lateral Raises", sets: 3, reps: "15-20", note: "" },
+          { name: "Tricep Rope Pushdowns", sets: 3, reps: "12-15", note: "" },
+          { name: "Ab Carver Pro (kneeling, short range)", sets: 3, reps: "5-8", note: "Focus on perfect technique" }
+        ]
+      },
+      day2: {
+        name: "Lower Body A (Quad Dominant)",
+        exercises: [
+          { name: "Leg Press", sets: 3, reps: "10-12", note: "" },
+          { name: "Goblet Squats", sets: 3, reps: "12-15", note: "" },
+          { name: "Romanian Deadlifts (dumbbells)", sets: 3, reps: "10-12", note: "" },
+          { name: "Leg Extension Machine", sets: 3, reps: "12-15", note: "" },
+          { name: "Leg Curl Machine", sets: 3, reps: "12-15", note: "" },
+          { name: "Bulgarian Split Squats", sets: 3, reps: "10-12 each leg", note: "" },
+          { name: "Calf Raises", sets: 3, reps: "15-20", note: "" },
+          { name: "Hanging Knee Raises", sets: 3, reps: "8-12", note: "" }
+        ]
+      },
+      day3: {
+        name: "Rest Day",
+        exercises: []
+      },
+      day4: {
+        name: "Upper Body B (Pull Focus)",
+        exercises: [
+          { name: "Lat Pulldown (wide grip)", sets: 3, reps: "10-12", note: "" },
+          { name: "Dumbbell Shoulder Press", sets: 3, reps: "10-12", note: "" },
+          { name: "Lat Pulldown (close grip)", sets: 3, reps: "10-12", note: "" },
+          { name: "Incline Chest Press Machine", sets: 3, reps: "10-12", note: "" },
+          { name: "Single Arm Dumbbell Row", sets: 3, reps: "10-12 each arm", note: "" },
+          { name: "Face Pulls", sets: 3, reps: "15-20", note: "" },
+          { name: "Leaning Cable Lateral Raises", sets: 3, reps: "12-15 each arm", note: "" },
+          { name: "Dumbbell Curls", sets: 3, reps: "10-12", note: "" },
+          { name: "Hammer Curls", sets: 3, reps: "10-12", note: "" },
+          { name: "Ab Carver Pro (kneeling, short range)", sets: 3, reps: "5-8", note: "Focus on perfect technique" }
+        ]
+      },
+      day5: {
+        name: "Lower Body B (Posterior Chain)",
+        exercises: [
+          { name: "Smith Machine Deadlifts", sets: 3, reps: "8-10", note: "" },
+          { name: "Leg Press (feet high and wide)", sets: 3, reps: "10-12", note: "" },
+          { name: "Leg Curl Machine", sets: 3, reps: "10-12", note: "" },
+          { name: "Walking Lunges", sets: 3, reps: "12 steps each leg", note: "" },
+          { name: "Hip Thrusts", sets: 3, reps: "12-15", note: "" },
+          { name: "Leg Extension Machine", sets: 3, reps: "12-15", note: "" },
+          { name: "Calf Raises", sets: 3, reps: "15-20", note: "" },
+          { name: "Cable Woodchoppers", sets: 3, reps: "12-15 each side", note: "" }
+        ]
+      },
+      day6: {
+        name: "Rest Day",
+        exercises: []
+      },
+      day7: {
+        name: "Rest Day",
+        exercises: []
+      }
+    },
+    goals: [
+      "Complete all 16 workouts (4 per week × 4 weeks)",
+      "Master Ab Carver form (short range, perfect technique)",
+      "Establish baseline weights for all exercises",
+      "Hit 165g protein 6 out of 7 days per week",
+      "Determine actual maintenance calories",
+      "Overcome initial workout anxiety (gets easier each week)"
+    ]
+  },
+  month2: {
+    name: "Month 2: Growth Phase",
+    goal: "Increase volume, progressive overload, build momentum",
+    weeks: "5-8",
+    nutrition: {
+      calories: 2500,
+      protein: 165,
+      note: "Adjust based on Month 1 results: If maintained weight increase to 2,500-2,600. If lost weight increase to 2,600-2,700. If gained too fast stay at 2,400. Target: Gain 0.5-1 lb per week."
+    },
+    workouts: {
+      day1: {
+        name: "Upper Body A (Push Focus)",
+        exercises: [
+          { name: "Chest Press Machine", sets: 4, reps: "8-10", note: "+1 set, heavier weight" },
+          { name: "Incline Dumbbell Press", sets: 4, reps: "10-12", note: "+1 set" },
+          { name: "Shoulder Press Machine", sets: 4, reps: "10-12", note: "" },
+          { name: "Dumbbell Lateral Raises", sets: 4, reps: "12-15", note: "+1 set" },
+          { name: "Seated Cable Row", sets: 3, reps: "10-12", note: "" },
+          { name: "Cable Flyes", sets: 3, reps: "12-15", note: "" },
+          { name: "Cable Lateral Raises", sets: 3, reps: "15-20", note: "" },
+          { name: "Tricep Rope Pushdowns", sets: 3, reps: "12-15", note: "" },
+          { name: "Ab Carver (kneeling, FULL range)", sets: 3, reps: "8-12", note: "Progress to full range of motion" }
+        ]
+      },
+      day2: {
+        name: "Lower Body A (Quad Dominant)",
+        exercises: [
+          { name: "Leg Press", sets: 4, reps: "10-12", note: "+1 set" },
+          { name: "Goblet Squats", sets: 4, reps: "12-15", note: "+1 set" },
+          { name: "Romanian Deadlifts", sets: 4, reps: "10-12", note: "+1 set" },
+          { name: "Leg Extension Machine", sets: 3, reps: "12-15", note: "" },
+          { name: "Leg Curl Machine", sets: 3, reps: "12-15", note: "" },
+          { name: "Bulgarian Split Squats", sets: 3, reps: "10-12 each leg", note: "" },
+          { name: "Calf Raises", sets: 4, reps: "15-20", note: "+1 set" },
+          { name: "Hanging Knee Raises", sets: 3, reps: "10-15", note: "" }
+        ]
+      },
+      day3: {
+        name: "Rest Day",
+        exercises: []
+      },
+      day4: {
+        name: "Upper Body B (Pull Focus)",
+        exercises: [
+          { name: "Lat Pulldown (wide grip)", sets: 4, reps: "8-10", note: "+1 set, heavier weight" },
+          { name: "Dumbbell Shoulder Press", sets: 4, reps: "10-12", note: "+1 set" },
+          { name: "Lat Pulldown (close grip)", sets: 3, reps: "10-12", note: "" },
+          { name: "Incline Chest Press Machine", sets: 3, reps: "10-12", note: "" },
+          { name: "Single Arm Dumbbell Row", sets: 4, reps: "10-12 each arm", note: "+1 set" },
+          { name: "Face Pulls", sets: 3, reps: "15-20", note: "" },
+          { name: "Leaning Cable Lateral Raises", sets: 3, reps: "12-15 each arm", note: "" },
+          { name: "Dumbbell Curls", sets: 3, reps: "10-12", note: "" },
+          { name: "Hammer Curls", sets: 3, reps: "10-12", note: "" },
+          { name: "Ab Carver (kneeling, FULL range)", sets: 3, reps: "8-12", note: "Progress to full range of motion" }
+        ]
+      },
+      day5: {
+        name: "Lower Body B (Posterior Chain)",
+        exercises: [
+          { name: "Smith Machine Deadlifts", sets: 4, reps: "8-10", note: "+1 set" },
+          { name: "Leg Press (feet high and wide)", sets: 4, reps: "10-12", note: "+1 set" },
+          { name: "Leg Curl Machine", sets: 4, reps: "10-12", note: "+1 set" },
+          { name: "Walking Lunges", sets: 3, reps: "12 steps each leg", note: "" },
+          { name: "Hip Thrusts", sets: 4, reps: "12-15", note: "+1 set" },
+          { name: "Leg Extension", sets: 3, reps: "12-15", note: "" },
+          { name: "Calf Raises", sets: 4, reps: "15-20", note: "" },
+          { name: "Cable Woodchoppers", sets: 3, reps: "12-15 each side", note: "" }
+        ]
+      },
+      day6: {
+        name: "Rest Day",
+        exercises: []
+      },
+      day7: {
+        name: "Rest Day",
+        exercises: []
+      }
+    },
+    goals: [
+      "Complete all 16 workouts",
+      "Increase weight on at least 5 major lifts",
+      "Master full-range Ab Carver rollouts",
+      "Gain 2-4 lbs total for the month",
+      "Hit 165g protein daily (no exceptions)",
+      "Waist increase less than 0.5 inches"
+    ]
+  },
+  month3: {
+    name: "Month 3: Intensity Phase",
+    goal: "Push limits, maximize strength gains, solidify habits",
+    weeks: "9-12",
+    nutrition: {
+      calories: 2500,
+      protein: 165,
+      note: "Maintain Month 2 calorie levels (adjusted for gains). Continue targeting 0.5-1 lb per week gain."
+    },
+    workouts: {
+      day1: {
+        name: "Upper Body A (Push Focus)",
+        exercises: [
+          { name: "Chest Press Machine", sets: 4, reps: "6-8", note: "HEAVIER - lower rep range" },
+          { name: "Incline Dumbbell Press", sets: 4, reps: "8-10", note: "" },
+          { name: "Shoulder Press Machine", sets: 4, reps: "8-10", note: "" },
+          { name: "Dumbbell Lateral Raises", sets: 5, reps: "12-15", note: "+1 set" },
+          { name: "Seated Cable Row", sets: 4, reps: "8-10", note: "Heavier weight" },
+          { name: "Cable Flyes", sets: 3, reps: "12-15", note: "" },
+          { name: "Cable Lateral Raises", sets: 4, reps: "15-20", note: "+1 set" },
+          { name: "Tricep Rope Pushdowns", sets: 4, reps: "12-15", note: "+1 set" },
+          { name: "Ab Carver (kneeling, full range)", sets: 4, reps: "12-15", note: "" }
+        ]
+      },
+      day2: {
+        name: "Lower Body A (Quad Dominant)",
+        exercises: [
+          { name: "Leg Press", sets: 4, reps: "8-10", note: "HEAVIER - lower rep range" },
+          { name: "Goblet Squats", sets: 4, reps: "10-12", note: "" },
+          { name: "Romanian Deadlifts", sets: 4, reps: "8-10", note: "HEAVIER - lower rep range" },
+          { name: "Leg Extension", sets: 4, reps: "12-15", note: "+1 set" },
+          { name: "Leg Curl", sets: 4, reps: "12-15", note: "+1 set" },
+          { name: "Bulgarian Split Squats", sets: 4, reps: "10-12 each leg", note: "+1 set" },
+          { name: "Calf Raises", sets: 4, reps: "15-20", note: "" },
+          { name: "Hanging Leg Raises (straight legs)", sets: 3, reps: "8-12", note: "Progress from knee raises" }
+        ]
+      },
+      day3: {
+        name: "Rest Day",
+        exercises: []
+      },
+      day4: {
+        name: "Upper Body B (Pull Focus)",
+        exercises: [
+          { name: "Lat Pulldown (wide grip)", sets: 4, reps: "6-8", note: "HEAVIER - lower rep range" },
+          { name: "Dumbbell Shoulder Press", sets: 4, reps: "8-10", note: "" },
+          { name: "Lat Pulldown (close grip)", sets: 4, reps: "10-12", note: "+1 set" },
+          { name: "Incline Chest Press", sets: 4, reps: "10-12", note: "+1 set" },
+          { name: "Single Arm Dumbbell Row", sets: 4, reps: "8-10 each arm", note: "Heavier weight" },
+          { name: "Face Pulls", sets: 4, reps: "15-20", note: "+1 set" },
+          { name: "Leaning Cable Lateral Raises", sets: 4, reps: "12-15 each arm", note: "+1 set" },
+          { name: "Dumbbell Curls", sets: 4, reps: "10-12", note: "+1 set" },
+          { name: "Hammer Curls", sets: 3, reps: "10-12", note: "" },
+          { name: "Ab Carver (kneeling, full range)", sets: 4, reps: "12-15", note: "" }
+        ]
+      },
+      day5: {
+        name: "Lower Body B (Posterior Chain)",
+        exercises: [
+          { name: "Smith Machine Deadlifts", sets: 4, reps: "6-8", note: "HEAVIER - lower rep range" },
+          { name: "Leg Press (feet high and wide)", sets: 4, reps: "8-10", note: "" },
+          { name: "Leg Curl", sets: 4, reps: "10-12", note: "" },
+          { name: "Walking Lunges", sets: 4, reps: "12 steps each leg", note: "+1 set" },
+          { name: "Hip Thrusts", sets: 4, reps: "10-12", note: "Heavier weight" },
+          { name: "Leg Extension", sets: 4, reps: "12-15", note: "+1 set" },
+          { name: "Calf Raises", sets: 5, reps: "15-20", note: "+1 set" },
+          { name: "Cable Woodchoppers", sets: 4, reps: "12-15 each side", note: "" }
+        ]
+      },
+      day6: {
+        name: "Rest Day",
+        exercises: []
+      },
+      day7: {
+        name: "Rest Day",
+        exercises: []
+      }
+    },
+    goals: [
+      "Complete all 16 workouts",
+      "Achieve personal records on major lifts",
+      "Progress to standing Ab Carver rollouts (if ready)",
+      "Gain 2-4 lbs for the month (6-12 lbs total over 3 months)",
+      "Visible shoulder development",
+      "Take END photos and measurements for comparison"
+    ]
+  }
+};
+
+// State variables
+var selectedMonth = 'month1';
+var currentWeek = 1;
+var selectedDay = null;
+var currentView = 'workout';
+
+// Load saved data from localStorage
+var workoutLogs = JSON.parse(localStorage.getItem('transformationLogs') || '{}');
+var measurements = JSON.parse(localStorage.getItem('transformationMeasurements') || '[]');
+
+// Save data to localStorage
+function saveData() {
+  localStorage.setItem('transformationLogs', JSON.stringify(workoutLogs));
+  localStorage.setItem('transformationMeasurements', JSON.stringify(measurements));
+}
+
+// Generate unique key for exercise log
+function getLogKey(exerciseName) {
+  return selectedMonth + '-week' + currentWeek + '-' + selectedDay + '-' + exerciseName;
+}
+
+// Switch between views
+function switchView(view) {
+  currentView = view;
+  
+  document.getElementById('navWorkout').className = (view === 'workout') ? 'active' : '';
+  document.getElementById('navProgress').className = (view === 'progress') ? 'active' : '';
+  document.getElementById('navGoals').className = (view === 'goals') ? 'active' : '';
+  
+  document.getElementById('workoutView').style.display = (view === 'workout') ? 'block' : 'none';
+  document.getElementById('progressView').style.display = (view === 'progress') ? 'block' : 'none';
+  document.getElementById('goalsView').style.display = (view === 'goals') ? 'block' : 'none';
+  
+  if (view === 'progress') {
+    renderProgressView();
+  }
+  if (view === 'goals') {
+    renderGoalsView();
+  }
+}
+
+// Change training month/phase
+function changeMonth() {
+  selectedMonth = document.getElementById('monthSelector').value;
+  selectedDay = null;
+  renderApp();
+}
+
+// Set current week
+function setWeek(week) {
+  currentWeek = week;
+  renderApp();
+}
+
+// Set current day
+function setDay(day) {
+  selectedDay = day;
+  renderExerciseTable();
+}
+
+// Toggle exercise completion
+function toggleExerciseComplete(exerciseName) {
+  var key = getLogKey(exerciseName);
+  if (!workoutLogs[key]) {
+    workoutLogs[key] = {};
+  }
+  workoutLogs[key].completed = !workoutLogs[key].completed;
+  saveData();
+  renderExerciseTable();
+}
+
+// Update exercise log field
+function updateExerciseLog(exerciseName, field, value) {
+  var key = getLogKey(exerciseName);
+  if (!workoutLogs[key]) {
+    workoutLogs[key] = {};
+  }
+  workoutLogs[key][field] = value;
+  saveData();
+}
+
+// Get exercise log
+function getExerciseLog(exerciseName) {
+  var key = getLogKey(exerciseName);
+  return workoutLogs[key] || {};
+}
+
+// Main render function
+function renderApp() {
+  var data = WORKOUT_DATA[selectedMonth];
+  
+  // Update subtitle
+  document.getElementById('currentGoal').textContent = data.goal;
+  
+  // Render week buttons
+  var weekHtml = '';
+  for (var i = 1; i <= 4; i++) {
+    var activeClass = (currentWeek === i) ? 'active' : '';
+    weekHtml += '<button class="' + activeClass + '" onclick="setWeek(' + i + ')">' + i + '</button>';
+  }
+  document.getElementById('weekButtons').innerHTML = weekHtml;
+  
+  // Render day buttons
+  var days = ['day1', 'day2', 'day3', 'day4', 'day5', 'day6', 'day7'];
+  var dayHtml = '';
+  for (var i = 0; i < days.length; i++) {
+    var dayKey = days[i];
+    var workout = data.workouts[dayKey];
+    var isRest = workout.exercises.length === 0;
+    var dayLabel = workout.name.split('(')[0].trim();
+    var activeClass = (selectedDay === dayKey) ? 'active' : '';
+    var disabledAttr = isRest ? 'disabled' : '';
+    
+    dayHtml += '<button class="' + activeClass + '" ' + disabledAttr + ' onclick="setDay(\'' + dayKey + '\')">';
+    dayHtml += 'Day ' + (i + 1) + ': ' + dayLabel;
+    dayHtml += '</button>';
+  }
+  document.getElementById('dayButtons').innerHTML = dayHtml;
+  
+  // Render exercise table
+  renderExerciseTable();
+}
+
+// Render exercise table
+function renderExerciseTable() {
+  var container = document.getElementById('exerciseTableContainer');
+  
+  if (!selectedDay) {
+    container.innerHTML = '<p class="empty-message">Select a training day above to see exercises.</p>';
+    return;
+  }
+  
+  var data = WORKOUT_DATA[selectedMonth];
+  var workout = data.workouts[selectedDay];
+  
+  if (workout.exercises.length === 0) {
+    container.innerHTML = '<div class="section"><h3>' + workout.name + '</h3><p>Take this day to rest and recover. Focus on sleep, nutrition, and light stretching.</p></div>';
+    return;
+  }
+  
+  var html = '<h3>' + workout.name + '</h3>';
+  html += '<table>';
+  html += '<thead><tr>';
+  html += '<th style="width:50px">Done</th>';
+  html += '<th>Exercise</th>';
+  html += '<th style="width:100px">Sets × Reps</th>';
+  html += '<th style="width:90px">Weight</th>';
+  html += '<th style="width:120px">Notes</th>';
+  html += '</tr></thead>';
+  html += '<tbody>';
+  
+  for (var i = 0; i < workout.exercises.length; i++) {
+    var exercise = workout.exercises[i];
+    var log = getExerciseLog(exercise.name);
+    var completedClass = log.completed ? 'completed' : '';
+    var checkedAttr = log.completed ? 'checked' : '';
+    var escapedName = exercise.name.replace(/'/g, "\\'");
+    
+    html += '<tr class="' + completedClass + '">';
+    html += '<td><input type="checkbox" ' + checkedAttr + ' onchange="toggleExerciseComplete(\'' + escapedName + '\')"></td>';
+    html += '<td>' + exercise.name;
+    if (exercise.note) {
+      html += '<span class="exercise-note">' + exercise.note + '</span>';
+    }
+    html += '</td>';
+    html += '<td>' + exercise.sets + ' × ' + exercise.reps + '</td>';
+    html += '<td><input type="number" placeholder="lbs" value="' + (log.weight || '') + '" onchange="updateExerciseLog(\'' + escapedName + '\', \'weight\', this.value)" style="width:70px"></td>';
+    html += '<td><input type="text" placeholder="notes" value="' + (log.notes || '') + '" onchange="updateExerciseLog(\'' + escapedName + '\', \'notes\', this.value)" style="width:100px"></td>';
+    html += '</tr>';
+  }
+  
+  html += '</tbody></table>';
+  container.innerHTML = html;
+}
+
+// Render progress view
+function renderProgressView() {
+  var data = WORKOUT_DATA[selectedMonth];
+  
+  // Nutrition grid
+  var nutritionHtml = '';
+  nutritionHtml += '<div class="nutrition-card"><div class="value">' + data.nutrition.calories + '</div><div class="label">Daily Calories</div></div>';
+  nutritionHtml += '<div class="nutrition-card"><div class="value">' + data.nutrition.protein + 'g</div><div class="label">Daily Protein</div></div>';
+  nutritionHtml += '<div class="nutrition-card"><div class="value">0.5-1 lb</div><div class="label">Weekly Gain Target</div></div>';
+  document.getElementById('nutritionGrid').innerHTML = nutritionHtml;
+  
+  // Nutrition note
+  document.getElementById('nutritionNote').textContent = data.nutrition.note || '';
+  
+  // Measurements table
+  renderMeasurementTable();
+}
+
+// Toggle measurement form
+function toggleMeasurementForm() {
+  var form = document.getElementById('measurementForm');
+  if (form.style.display === 'none') {
+    form.style.display = 'block';
+    document.getElementById('inputDate').value = new Date().toISOString().split('T')[0];
+  } else {
+    form.style.display = 'none';
+  }
+}
+
+// Save measurement
+function saveMeasurement() {
+  var measurement = {
+    id: Date.now(),
+    date: document.getElementById('inputDate').value,
+    weight: document.getElementById('inputWeight').value,
+    waist: document.getElementById('inputWaist').value,
+    chest: document.getElementById('inputChest').value,
+    shoulders: document.getElementById('inputShoulders').value,
+    arms: document.getElementById('inputArms').value,
+    thighs: document.getElementById('inputThighs').value
+  };
+  
+  if (measurement.weight || measurement.waist) {
+    measurements.push(measurement);
+    saveData();
+    
+    // Clear form
+    document.getElementById('inputWeight').value = '';
+    document.getElementById('inputWaist').value = '';
+    document.getElementById('inputChest').value = '';
+    document.getElementById('inputShoulders').value = '';
+    document.getElementById('inputArms').value = '';
+    document.getElementById('inputThighs').value = '';
+    
+    document.getElementById('measurementForm').style.display = 'none';
+    renderMeasurementTable();
+  }
+}
+
+// Render measurement table
+function renderMeasurementTable() {
+  var container = document.getElementById('measurementTableContainer');
+  
+  if (measurements.length === 0) {
+    container.innerHTML = '<p class="empty-message">No measurements logged yet. Click "+ Add Measurement" to start tracking your progress.</p>';
+    return;
+  }
+  
+  var html = '<table>';
+  html += '<thead><tr>';
+  html += '<th>Date</th>';
+  html += '<th>Weight</th>';
+  html += '<th>Waist</th>';
+  html += '<th>Chest</th>';
+  html += '<th>Shoulders</th>';
+  html += '<th>Arms</th>';
+  html += '<th>Thighs</th>';
+  html += '</tr></thead>';
+  html += '<tbody>';
+  
+  // Show most recent first
+  for (var i = measurements.length - 1; i >= 0; i--) {
+    var m = measurements[i];
+    html += '<tr>';
+    html += '<td>' + m.date + '</td>';
+    html += '<td>' + (m.weight ? m.weight + ' lbs' : '-') + '</td>';
+    html += '<td>' + (m.waist ? m.waist + '"' : '-') + '</td>';
+    html += '<td>' + (m.chest ? m.chest + '"' : '-') + '</td>';
+    html += '<td>' + (m.shoulders ? m.shoulders + '"' : '-') + '</td>';
+    html += '<td>' + (m.arms ? m.arms + '"' : '-') + '</td>';
+    html += '<td>' + (m.thighs ? m.thighs + '"' : '-') + '</td>';
+    html += '</tr>';
+  }
+  
+  html += '</tbody></table>';
+  container.innerHTML = html;
+}
+
+// Render goals view
+function renderGoalsView() {
+  var data = WORKOUT_DATA[selectedMonth];
+  
+  document.getElementById('goalsTitle').textContent = data.name + ' Goals';
+  
+  var goalsHtml = '';
+  for (var i = 0; i < data.goals.length; i++) {
+    goalsHtml += '<li>' + data.goals[i] + '</li>';
+  }
+  document.getElementById('goalsList').innerHTML = goalsHtml;
+}
+
+// Initialize app
+renderApp();
+</script>
+
+</body>
+</html>
