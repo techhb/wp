@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>15-Minute Rest Day Routine</title>
+<style>
+* { box-sizing: border-box; }
+body { 
+  font-family: system-ui, -apple-system, sans-serif; 
+  max-width: 700px; 
+  margin: 0 auto; 
+  padding: 20px; 
+  line-height: 1.6;
+  background: #f9f9f9;
+}
+h1 { margin-bottom: 5px; color: #333; }
+.subtitle { color: #666; margin-top: 0; margin-bottom: 25px; }
+.info-box {
+  background: #e8f5e9;
+  border-left: 4px solid #4caf50;
+  padding: 15px;
+  margin-bottom: 25px;
+  border-radius: 0 8px 8px 0;
+}
+.section {
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.section h2 {
+  margin-top: 0;
+  color: #333;
+  font-size: 18px;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 10px;
+}
+.exercise {
+  display: flex;
+  align-items: flex-start;
+  padding: 15px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+.exercise:last-child { border-bottom: none; }
+.exercise-number {
+  background: #333;
+  color: #fff;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+  margin-right: 15px;
+  flex-shrink: 0;
+}
+.exercise-content { flex: 1; }
+.exercise-name { 
+  font-weight: 600; 
+  font-size: 16px; 
+  margin-bottom: 4px;
+  color: #333;
+}
+.exercise-details { 
+  color: #666; 
+  font-size: 14px; 
+  margin-bottom: 8px;
+}
+.exercise-details span {
+  background: #f0f0f0;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-right: 8px;
+}
+.exercise-instructions {
+  font-size: 13px;
+  color: #555;
+  line-height: 1.5;
+}
+.timer-section {
+  background: #333;
+  color: #fff;
+  border-radius: 10px;
+  padding: 25px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+.timer-display {
+  font-size: 64px;
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+  margin: 15px 0;
+}
+.timer-label {
+  font-size: 14px;
+  color: #aaa;
+  margin-bottom: 5px;
+}
+.current-exercise {
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+.timer-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.timer-buttons button {
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.btn-start { background: #4caf50; color: #fff; }
+.btn-pause { background: #ff9800; color: #fff; }
+.btn-reset { background: #666; color: #fff; }
+.btn-skip { background: #2196f3; color: #fff; }
+.progress-bar {
+  width: 100%;
+  height: 6px;
+  background: #555;
+  border-radius: 3px;
+  margin-top: 20px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: #4caf50;
+  transition: width 0.3s ease;
+}
+.checklist { margin-top: 15px; }
+.checklist label {
+  display: flex;
+  align-items: center;
+  padding: 8px 0;
+  cursor: pointer;
+}
+.checklist input {
+  width: 20px;
+  height: 20px;
+  margin-right: 12px;
+}
+.notes {
+  background: #fff3e0;
+  border-left: 4px solid #ff9800;
+  padding: 15px;
+  margin-top: 20px;
+  border-radius: 0 8px 8px 0;
+}
+.notes h3 { margin-top: 0; color: #e65100; }
+.notes ul { margin: 0; padding-left: 20px; }
+.notes li { margin-bottom: 8px; }
+@media (max-width: 500px) {
+  .timer-display { font-size: 48px; }
+  .exercise { flex-direction: column; }
+  .exercise-number { margin-bottom: 10px; }
+}
+</style>
+</head>
+<body>
+
+<h1>🧘 15-Minute Rest Day Routine</h1>
+<p class="subtitle">Mobility, stretching & light core work for recovery</p>
+
+<div class="info-box">
+  <strong>When to use:</strong> Days 3, 6, 7 of your training week<br>
+  <strong>Goal:</strong> Improve mobility, blood flow, and recovery — NOT to build muscle<br>
+  <strong>Intensity:</strong> Easy. If it feels like a workout, you're going too hard.
+</div>
+
+<!-- Timer Section -->
+<div class="timer-section">
+  <div class="timer-label">CURRENT EXERCISE</div>
+  <div class="current-exercise" id="currentExercise">Ready to start</div>
+  <div class="timer-display" id="timerDisplay">0:45</div>
+  <div class="timer-buttons">
+    <button class="btn-start" id="startBtn" onclick="startTimer()">▶ Start</button>
+    <button class="btn-pause" id="pauseBtn" onclick="pauseTimer()">⏸ Pause</button>
+    <button class="btn-skip" onclick="nextExercise()">⏭ Skip</button>
+    <button class="btn-reset" onclick="resetTimer()">↺ Reset</button>
+  </div>
+  <div class="progress-bar">
+    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+  </div>
+  <p style="margin-top:15px; font-size:13px; color:#aaa;">Exercise <span id="exerciseNum">1</span> of 12</p>
+</div>
+
+<!-- Part 1: Mobility -->
+<div class="section">
+  <h2>Part 1: Mobility (5 minutes)</h2>
+  
+  <div class="exercise">
+    <div class="exercise-number">1</div>
+    <div class="exercise-content">
+      <div class="exercise-name">Cat-Cow Stretch</div>
+      <div class="exercise-details">
+        <span>45 sec</span>
+      </div>
+      <div class="exercise-instructions">
+        On all fours, alternate between arching your back (cow) and rounding it (cat). Move slowly with your breath. Inhale as you arch, exhale as you round.
+      </div>
+    </div>
+  </div>
+
+  <div class="exercise">
+    <div class="exercise-number">2</div>
+    <div class="exercise-content">
+      <div class="exercise-name">World's Greatest Stretch (Left)</div>
+      <div class="exercise-details">
+        <span>45 sec</span>
+      </div>
+      <div class="exercise-instructions">
+        Lunge forward with left foot, place right hand on floor, rotate left arm to ceiling. Feel the hip flexor and thoracic spine open up. Hold and breathe.
+      </div>
+    </div>
+  </div>
+
+  <div class="exercise">
+    <div class="exercise-number">3</div>
+    <div class="exercise-content">
+      <div class="exercise-name">World's Greatest Stretch (Right)</div>
+      <div class="exercise-details">
+        <span>45 sec</span>
+      </div>
+      <div class="exercise-instructions">
+        Same as above, opposite side. Lunge forward with right foot, left hand on floor, rotate right arm to ceiling.
+      </div>
+    </div>
+  </div>
+
+  <div class="exercise">
+    <div class="exercise-number">4</div>
+    <div class="exercise-content">
+      <div class="exercise-name">Hip 90/90 Stretch (Left)</div>
+      <div class="exercise-details">
+        <span>45 sec</span>
+      </div>
+      <div class="exercise-instructions">
+        Sit with left leg in front (shin parallel to chest), right leg to side (shin perpendicular). Lean forward gently over front shin. Great for hip mobility.
+      </div>
+    </div>
+  </div>
+
+  <div class="exercise">
+    <div class="exercise-number">5</div>
+    <div class="exercise-content">
+      <div class="exercise-name">Hip 90/90 Stretch (Right)</div>
+      <div class="exercise-details">
+        <span>45 sec</span>
+      </div>
+      <div class="exercise-instructions">
+        Switch legs. Right leg in front, left leg to side. Lean forward gently. Keep your back straight.
+      </div>
+    </div>
+  </div>
+
+  <div class="exercise">
+    <div class="exercise-number">6</div>
+    <div class="exercise-content">
+      <div class="exercise-name">Shoulder Pass-Throughs</div>
+      <div class="exercise-details">
+        <span>45 sec</span>
+      </div>
+      <div class="exercise-instructions">
+        Hold a towel or band with wide grip. Keeping arms straight, slowly raise overhead and behind your back, then return. Go slow — this opens up shoulders and chest.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Part 2: Stretching -->
+<div class="section">
+  <h2>Part 2: Stretching (5 minutes)</h2>
+
+  <div class="exercise">
+    <div class="exercise-number">7</div>
+    <div class="exercise-content">
+      <div class="exercise-name">Kneeling Hip Flexor Stretch (Left)</div>
+      <div class="exercise-details">
+        <span>45 sec</span>
+      </div>
+      <div class="exercise-instructions">
+        Kneel on left knee, right foot forward. Push hips forward gently, squeeze left glute. Keep torso upright. Critical for anyone who sits at a desk.
+      </div>
+    </div>
+  </div>
+
+  <div class="exercise">
+    <div class="exercise-number">8</div>
+    <div class="exercise-content">
+      <div class="exercise-name">Kneeling Hip Flexor Stretch (Right)</div>
+      <div class="exercise-details">
+        <span>45 sec</span>
+      </div>
+      <div class="exercise-instructions">
+        Switch sides. Kneel on right knee, left foot forward. Push hips forward, squeeze right glute.
+      </div>
+    </div>
+  </div>
+
+  <div class="exercise">
+    <div class="exercise-number">9</div>
+    <div class="exercise-content">
+      <div class="exercise-name">Lying Glute Stretch (Figure 4)</div>
+      <div class="exercise-details">
+        <span>45 sec each side</span>
+      </div>
+      <div class="exercise-instructions">
+        Lie on back. Cross left ankle over right knee, pull right thigh toward chest. Hold 45 sec, then switch sides. Releases glutes and piriformis.
+      </div>
+    </div>
+  </div>
+
+  <div class="exercise">
+    <div class="exercise-number">10</div>
+    <div class="exercise-content">
+      <div class="exercise-name">Chest Doorway Stretch</div>
+      <div class="exercise-details">
+        <span>45 sec</span>
+      </div>
+      <div class="exercise-instructions">
+        Stand in doorway, forearms on frame at 90°. Step forward until you feel a stretch across chest and front delts. Hold. Counters all that pressing work.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Part 3: Light Core -->
+<div class="section">
+  <h2>Part 3: Light Core (5 minutes)</h2>
+
+  <div class="exercise">
+    <div class="exercise-number">11</div>
+    <div class="exercise-content">
+      <div class="exercise-name">Dead Bugs</div>
+      <div class="exercise-details">
+        <span>45 sec</span>
+        <span>Slow & controlled</span>
+      </div>
+      <div class="exercise-instructions">
+        Lie on back, arms up, knees at 90°. Lower opposite arm and leg toward floor while keeping lower back pressed down. Alternate sides slowly. Focus on not letting your back arch.
+      </div>
+    </div>
+  </div>
+
+  <div class="exercise">
+    <div class="exercise-number">12</div>
+    <div class="exercise-content">
+      <div class="exercise-name">Bird Dogs</div>
+      <div class="exercise-details">
+        <span>45 sec</span>
+        <span>Slow & controlled</span>
+      </div>
+      <div class="exercise-instructions">
+        On all fours, extend right arm and left leg simultaneously. Hold 2 seconds, return, switch sides. Keep core tight and hips level — no rotation.
+      </div>
+    </div>
+  </div>
+
+  <div class="exercise">
+    <div class="exercise-number">13</div>
+    <div class="exercise-content">
+      <div class="exercise-name">Plank Hold</div>
+      <div class="exercise-details">
+        <span>30-45 sec</span>
+      </div>
+      <div class="exercise-instructions">
+        Forearms and toes on floor, body in straight line. Squeeze glutes, brace core, breathe. Don't let hips sag or pike up. Stop if form breaks.
+      </div>
+    </div>
+  </div>
+
+  <div class="exercise">
+    <div class="exercise-number">14</div>
+    <div class="exercise-content">
+      <div class="exercise-name">Child's Pose (Finish)</div>
+      <div class="exercise-details">
+        <span>45 sec</span>
+      </div>
+      <div class="exercise-instructions">
+        Kneel, sit back on heels, reach arms forward on floor. Relax and breathe deeply. Let your lower back decompress. You're done!
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Checklist -->
+<div class="section">
+  <h2>✅ Rest Day Checklist</h2>
+  <div class="checklist">
+    <label><input type="checkbox"> Completed mobility routine</label>
+    <label><input type="checkbox"> Hit 165g protein today</label>
+    <label><input type="checkbox"> Drank enough water (aim for 100oz)</label>
+    <label><input type="checkbox"> Got 7-8 hours sleep last night</label>
+    <label><input type="checkbox"> Light walk (10-15 min) — optional</label>
+  </div>
+</div>
+
+<!-- Notes -->
+<div class="notes">
+  <h3>💡 Rest Day Tips</h3>
+  <ul>
+    <li><strong>Don't skip protein</strong> — your muscles repair on rest days</li>
+    <li><strong>Sleep is gains</strong> — prioritize 7-8 hours, especially at 45</li>
+    <li><strong>If you're very sore</strong> — skip the core work, just do mobility</li>
+    <li><strong>Walking is underrated</strong> — 10-15 min improves recovery and mood</li>
+    <li><strong>Foam rolling</strong> — optional, but great for quads, glutes, and lats</li>
+  </ul>
+</div>
+
+<script>
+const exercises = [
+  { name: "Cat-Cow Stretch", duration: 45 },
+  { name: "World's Greatest Stretch (Left)", duration: 45 },
+  { name: "World's Greatest Stretch (Right)", duration: 45 },
+  { name: "Hip 90/90 Stretch (Left)", duration: 45 },
+  { name: "Hip 90/90 Stretch (Right)", duration: 45 },
+  { name: "Shoulder Pass-Throughs", duration: 45 },
+  { name: "Hip Flexor Stretch (Left)", duration: 45 },
+  { name: "Hip Flexor Stretch (Right)", duration: 45 },
+  { name: "Lying Glute Stretch (Both Sides)", duration: 90 },
+  { name: "Chest Doorway Stretch", duration: 45 },
+  { name: "Dead Bugs", duration: 45 },
+  { name: "Bird Dogs", duration: 45 },
+  { name: "Plank Hold", duration: 40 },
+  { name: "Child's Pose (Finish)", duration: 45 }
+];
+
+let currentExerciseIndex = 0;
+let timeRemaining = exercises[0].duration;
+let timerInterval = null;
+let isRunning = false;
+
+function updateDisplay() {
+  const mins = Math.floor(timeRemaining / 60);
+  const secs = timeRemaining % 60;
+  document.getElementById('timerDisplay').textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+  document.getElementById('currentExercise').textContent = exercises[currentExerciseIndex].name;
+  document.getElementById('exerciseNum').textContent = currentExerciseIndex + 1;
+  
+  const totalExercises = exercises.length;
+  const progress = ((currentExerciseIndex) / totalExercises) * 100;
+  document.getElementById('progressFill').style.width = progress + '%';
+}
+
+function startTimer() {
+  if (isRunning) return;
+  isRunning = true;
+  timerInterval = setInterval(() => {
+    timeRemaining--;
+    if (timeRemaining <= 0) {
+      nextExercise();
+    }
+    updateDisplay();
+  }, 1000);
+}
+
+function pauseTimer() {
+  isRunning = false;
+  clearInterval(timerInterval);
+}
+
+function nextExercise() {
+  currentExerciseIndex++;
+  if (currentExerciseIndex >= exercises.length) {
+    pauseTimer();
+    document.getElementById('currentExercise').textContent = "🎉 Done! Great work!";
+    document.getElementById('timerDisplay').textContent = "0:00";
+    document.getElementById('progressFill').style.width = '100%';
+    return;
+  }
+  timeRemaining = exercises[currentExerciseIndex].duration;
+  updateDisplay();
+}
+
+function resetTimer() {
+  pauseTimer();
+  currentExerciseIndex = 0;
+  timeRemaining = exercises[0].duration;
+  updateDisplay();
+}
+
+updateDisplay();
+</script>
+
+</body>
+</html>
