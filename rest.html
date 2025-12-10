@@ -81,6 +81,87 @@ h1 { margin-bottom: 5px; color: #333; }
   color: #555;
   line-height: 1.5;
 }
+.video-link {
+  display: inline-block;
+  background: #ff0000;
+  color: #fff;
+  padding: 3px 10px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 600;
+  margin-left: 5px;
+  cursor: pointer;
+}
+.video-link:hover {
+  background: #cc0000;
+}
+/* Video Modal Styles */
+.video-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.85);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+}
+.video-modal.active {
+  display: flex;
+}
+.video-modal-content {
+  position: relative;
+  width: 90%;
+  max-width: 800px;
+  background: #000;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.video-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  background: #222;
+  color: #fff;
+}
+.video-modal-title {
+  font-size: 16px;
+  font-weight: 600;
+}
+.video-modal-close {
+  background: #ff4444;
+  color: #fff;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.video-modal-close:hover {
+  background: #cc0000;
+}
+.video-container {
+  position: relative;
+  padding-bottom: 56.25%;
+  height: 0;
+  overflow: hidden;
+}
+.video-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
 .timer-section {
   background: #333;
   color: #fff;
@@ -202,6 +283,7 @@ h1 { margin-bottom: 5px; color: #333; }
       <div class="exercise-name">Cat-Cow Stretch</div>
       <div class="exercise-details">
         <span>45 sec</span>
+        <span class="video-link" onclick="openVideo('kqnua4rHVVA', 'Cat-Cow Stretch')">📺 Watch Video</span>
       </div>
       <div class="exercise-instructions">
         On all fours, alternate between arching your back (cow) and rounding it (cat). Move slowly with your breath. Inhale as you arch, exhale as you round.
@@ -215,6 +297,7 @@ h1 { margin-bottom: 5px; color: #333; }
       <div class="exercise-name">World's Greatest Stretch (Left)</div>
       <div class="exercise-details">
         <span>45 sec</span>
+        <span class="video-link" onclick="openVideo('u5gvsNtdHb8', 'World\'s Greatest Stretch')">📺 Watch Video</span>
       </div>
       <div class="exercise-instructions">
         Lunge forward with left foot, place right hand on floor, rotate left arm to ceiling. Feel the hip flexor and thoracic spine open up. Hold and breathe.
@@ -228,6 +311,7 @@ h1 { margin-bottom: 5px; color: #333; }
       <div class="exercise-name">World's Greatest Stretch (Right)</div>
       <div class="exercise-details">
         <span>45 sec</span>
+        <span class="video-link" onclick="openVideo('u5gvsNtdHb8', 'World\'s Greatest Stretch')">📺 Watch Video</span>
       </div>
       <div class="exercise-instructions">
         Same as above, opposite side. Lunge forward with right foot, left hand on floor, rotate right arm to ceiling.
@@ -241,6 +325,7 @@ h1 { margin-bottom: 5px; color: #333; }
       <div class="exercise-name">Hip 90/90 Stretch (Left)</div>
       <div class="exercise-details">
         <span>45 sec</span>
+        <span class="video-link" onclick="openVideo('8x1I5EflHlw', 'Hip 90/90 Stretch')">📺 Watch Video</span>
       </div>
       <div class="exercise-instructions">
         Sit with left leg in front (shin parallel to chest), right leg to side (shin perpendicular). Lean forward gently over front shin. Great for hip mobility.
@@ -254,6 +339,7 @@ h1 { margin-bottom: 5px; color: #333; }
       <div class="exercise-name">Hip 90/90 Stretch (Right)</div>
       <div class="exercise-details">
         <span>45 sec</span>
+        <span class="video-link" onclick="openVideo('8x1I5EflHlw', 'Hip 90/90 Stretch')">📺 Watch Video</span>
       </div>
       <div class="exercise-instructions">
         Switch legs. Right leg in front, left leg to side. Lean forward gently. Keep your back straight.
@@ -267,6 +353,7 @@ h1 { margin-bottom: 5px; color: #333; }
       <div class="exercise-name">Shoulder Pass-Throughs</div>
       <div class="exercise-details">
         <span>45 sec</span>
+        <span class="video-link" onclick="openVideo('gqjXRj7okkU', 'Shoulder Pass-Throughs')">📺 Watch Video</span>
       </div>
       <div class="exercise-instructions">
         Hold a towel or band with wide grip. Keeping arms straight, slowly raise overhead and behind your back, then return. Go slow — this opens up shoulders and chest.
@@ -285,6 +372,7 @@ h1 { margin-bottom: 5px; color: #333; }
       <div class="exercise-name">Kneeling Hip Flexor Stretch (Left)</div>
       <div class="exercise-details">
         <span>45 sec</span>
+        <span class="video-link" onclick="openVideo('YQmpO9VT2X4', 'Kneeling Hip Flexor Stretch')">📺 Watch Video</span>
       </div>
       <div class="exercise-instructions">
         Kneel on left knee, right foot forward. Push hips forward gently, squeeze left glute. Keep torso upright. Critical for anyone who sits at a desk.
@@ -298,6 +386,7 @@ h1 { margin-bottom: 5px; color: #333; }
       <div class="exercise-name">Kneeling Hip Flexor Stretch (Right)</div>
       <div class="exercise-details">
         <span>45 sec</span>
+        <span class="video-link" onclick="openVideo('YQmpO9VT2X4', 'Kneeling Hip Flexor Stretch')">📺 Watch Video</span>
       </div>
       <div class="exercise-instructions">
         Switch sides. Kneel on right knee, left foot forward. Push hips forward, squeeze right glute.
@@ -311,6 +400,7 @@ h1 { margin-bottom: 5px; color: #333; }
       <div class="exercise-name">Lying Glute Stretch (Figure 4)</div>
       <div class="exercise-details">
         <span>45 sec each side</span>
+        <span class="video-link" onclick="openVideo('a1pBPspc_ww', 'Figure 4 Glute Stretch')">📺 Watch Video</span>
       </div>
       <div class="exercise-instructions">
         Lie on back. Cross left ankle over right knee, pull right thigh toward chest. Hold 45 sec, then switch sides. Releases glutes and piriformis.
@@ -324,6 +414,7 @@ h1 { margin-bottom: 5px; color: #333; }
       <div class="exercise-name">Chest Doorway Stretch</div>
       <div class="exercise-details">
         <span>45 sec</span>
+        <span class="video-link" onclick="openVideo('WLSwnNEhb5Y', 'Chest Doorway Stretch')">📺 Watch Video</span>
       </div>
       <div class="exercise-instructions">
         Stand in doorway, forearms on frame at 90°. Step forward until you feel a stretch across chest and front delts. Hold. Counters all that pressing work.
@@ -343,6 +434,7 @@ h1 { margin-bottom: 5px; color: #333; }
       <div class="exercise-details">
         <span>45 sec</span>
         <span>Slow & controlled</span>
+        <span class="video-link" onclick="openVideo('I5xbsA71v1A', 'Dead Bugs')">📺 Watch Video</span>
       </div>
       <div class="exercise-instructions">
         Lie on back, arms up, knees at 90°. Lower opposite arm and leg toward floor while keeping lower back pressed down. Alternate sides slowly. Focus on not letting your back arch.
@@ -357,6 +449,7 @@ h1 { margin-bottom: 5px; color: #333; }
       <div class="exercise-details">
         <span>45 sec</span>
         <span>Slow & controlled</span>
+        <span class="video-link" onclick="openVideo('wiFNA3sqjCA', 'Bird Dogs')">📺 Watch Video</span>
       </div>
       <div class="exercise-instructions">
         On all fours, extend right arm and left leg simultaneously. Hold 2 seconds, return, switch sides. Keep core tight and hips level — no rotation.
@@ -370,6 +463,7 @@ h1 { margin-bottom: 5px; color: #333; }
       <div class="exercise-name">Plank Hold</div>
       <div class="exercise-details">
         <span>30-45 sec</span>
+        <span class="video-link" onclick="openVideo('yeKv5oX_6GY', 'Plank Hold')">📺 Watch Video</span>
       </div>
       <div class="exercise-instructions">
         Forearms and toes on floor, body in straight line. Squeeze glutes, brace core, breathe. Don't let hips sag or pike up. Stop if form breaks.
@@ -383,6 +477,7 @@ h1 { margin-bottom: 5px; color: #333; }
       <div class="exercise-name">Child's Pose (Finish)</div>
       <div class="exercise-details">
         <span>45 sec</span>
+        <span class="video-link" onclick="openVideo('2MJGg-dUKh0', 'Child\'s Pose')">📺 Watch Video</span>
       </div>
       <div class="exercise-instructions">
         Kneel, sit back on heels, reach arms forward on floor. Relax and breathe deeply. Let your lower back decompress. You're done!
@@ -415,7 +510,54 @@ h1 { margin-bottom: 5px; color: #333; }
   </ul>
 </div>
 
+<!-- Video Modal -->
+<div class="video-modal" id="videoModal">
+  <div class="video-modal-content">
+    <div class="video-modal-header">
+      <span class="video-modal-title" id="videoTitle">Exercise Video</span>
+      <button class="video-modal-close" onclick="closeVideo()">✕</button>
+    </div>
+    <div class="video-container">
+      <iframe id="videoFrame" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    </div>
+  </div>
+</div>
+
 <script>
+// Video Modal Functions
+function openVideo(videoId, title) {
+  var modal = document.getElementById('videoModal');
+  var iframe = document.getElementById('videoFrame');
+  var titleEl = document.getElementById('videoTitle');
+  
+  titleEl.textContent = title;
+  iframe.src = 'https://www.youtube.com/embed/' + videoId + '?autoplay=1&rel=0';
+  modal.classList.add('active');
+}
+
+function closeVideo() {
+  var modal = document.getElementById('videoModal');
+  var iframe = document.getElementById('videoFrame');
+  
+  modal.classList.remove('active');
+  iframe.src = '';
+}
+
+// Close modal when clicking outside
+document.addEventListener('click', function(e) {
+  var modal = document.getElementById('videoModal');
+  if (e.target === modal) {
+    closeVideo();
+  }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closeVideo();
+  }
+});
+
 const exercises = [
   { name: "Cat-Cow Stretch", duration: 45 },
   { name: "World's Greatest Stretch (Left)", duration: 45 },
